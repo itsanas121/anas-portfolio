@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "docker-angular-app": {
+    "anas-portfolio": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -38,8 +38,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "10kB",
+                  "maximumError": "16kB"
                 }
               ],
               "outputHashing": "all"
@@ -56,10 +56,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "docker-angular-app:build:production"
+              "buildTarget": "anas-portfolio:build:production"
             },
             "development": {
-              "buildTarget": "docker-angular-app:build:development"
+              "buildTarget": "anas-portfolio:build:development"
             }
           },
           "defaultConfiguration": "development"

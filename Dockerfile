@@ -15,7 +15,10 @@ RUN npm run build
 # Stage 2: Serve the Angular application
 FROM nginx:alpine
 
-COPY --from=build /app/dist/docker-angular-app/browser /usr/share/nginx/html
+# SPA routing: send deep links like /runs back to index.html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+COPY --from=build /app/dist/anas-portfolio/browser /usr/share/nginx/html
 
 EXPOSE 80
 

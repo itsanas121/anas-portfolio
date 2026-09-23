@@ -1,0 +1,81 @@
+<app-section-header
+  index="05"
+  label="query"
+  plain="Console & contact"
+  lede="Everything on this site sits in five tables. Query them yourself, then write something to my inbox."
+>
+  Ask the data. <em>Then ask me.</em>
+</app-section-header>
+
+<div class="console-wrap" appReveal>
+  <app-query-console />
+  <p class="tip mono">Tip: press <span class="kbd">`</span> on any page to open this console as a drawer.</p>
+</div>
+
+<section class="contact" aria-labelledby="contact-title">
+  <div class="contact-intro" appReveal>
+    <p class="kicker">write path</p>
+    <h2 id="contact-title" class="display">Open to data, backend and <em>technical PM</em> roles.</h2>
+    <p class="lede">The form writes an email for you. Nothing is stored and there's no tracking. Or reach me directly:</p>
+    <ul class="direct mono">
+      <li><span>email</span><a [href]="'mailto:' + profile.email">{{ profile.email }}</a></li>
+      <li><span>github</span><a [href]="profile.links.github" target="_blank" rel="noopener">github.com/itsanas121 ↗</a></li>
+      @if (profile.links.linkedin) {
+        <li><span>linkedin</span><a [href]="profile.links.linkedin" target="_blank" rel="noopener">LinkedIn ↗</a></li>
+      }
+      <li><span>based</span><span class="plain">{{ profile.location }}</span></li>
+    </ul>
+  </div>
+
+  <div class="form-card panel" appReveal [revealDelay]="100">
+    @if (sent()) {
+      <div class="done" animate.enter="fade-up">
+        <p class="mono ok">INSERT 0 1</p>
+        <p class="display">Your mail app should now be open with the message ready to send.</p>
+        <p class="muted">If nothing opened, email me directly at <a [href]="'mailto:' + profile.email">{{ profile.email }}</a>.</p>
+        <button type="button" class="btn" (click)="reset()">Write another</button>
+      </div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="row">
+          <label class="field" [class.error]="invalid('name')">
+            <span class="mono">name</span>
+            <input formControlName="name" autocomplete="name" placeholder="Your name" />
+            @if (invalid('name')) {
+              <small class="mono">NOT NULL violation: name is required</small>
+            }
+          </label>
+          <label class="field" [class.error]="invalid('email')">
+            <span class="mono">email</span>
+            <input formControlName="email" type="email" autocomplete="email" placeholder="you@company.com" />
+            @if (invalid('email')) {
+              <small class="mono">CHECK violation: a valid email is required</small>
+            }
+          </label>
+        </div>
+
+        <fieldset class="topics">
+          <legend class="mono">topic</legend>
+          @for (t of topics; track t) {
+            <label class="topic mono" [class.active]="form.controls.topic.value === t">
+              <input type="radio" formControlName="topic" [value]="t" />
+              {{ t }}
+            </label>
+          }
+        </fieldset>
+
+        <label class="field" [class.error]="invalid('message')">
+          <span class="mono">message</span>
+          <textarea formControlName="message" rows="5" placeholder="What are you working on?"></textarea>
+          @if (invalid('message')) {
+            <small class="mono">CHECK violation: at least 10 characters</small>
+          }
+        </label>
+
+        <pre class="preview mono" aria-label="SQL preview">{{ statement() }}</pre>
+
+        <button type="submit" class="btn btn--primary">Execute INSERT →</button>
+      </form>
+    }
+  </div>
+</section>

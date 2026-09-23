@@ -1,0 +1,76 @@
+<app-section-header
+  index="02"
+  label="artifacts"
+  plain="Projects"
+  lede="What the runs produced: pipelines, dashboards, platforms and one website you are looking at right now."
+>
+  Things I <em>shipped.</em>
+</app-section-header>
+
+<div class="toolbar" appReveal>
+  <div class="filters" role="tablist" aria-label="Filter projects">
+    @for (f of filters; track f.key) {
+      <button
+        type="button"
+        role="tab"
+        class="mono"
+        [class.active]="filter() === f.key"
+        [attr.aria-selected]="filter() === f.key"
+        (click)="filter.set(f.key)"
+      >
+        {{ f.label }} <span class="n">{{ count(f.key) }}</span>
+      </button>
+    }
+  </div>
+  <label class="search mono">
+    <span aria-hidden="true">⌕</span>
+    <input
+      #q
+      type="search"
+      placeholder="filter by name or tech…"
+      aria-label="Search projects"
+      [value]="search()"
+      (input)="search.set(q.value)"
+    />
+  </label>
+</div>
+
+<p class="count mono" aria-live="polite">
+  SELECT * FROM projects → <span>{{ results().length }} rows</span>
+</p>
+
+<div class="grid">
+  @for (a of results(); track a.slug; let i = $index) {
+    <a
+      class="card panel"
+      [class.wide]="i === 0 && filter() === 'all' && !search()"
+      [routerLink]="['/artifacts', a.slug]"
+      animate.enter="fade-up"
+    >
+      <div class="glyph">
+        <app-artifact-glyph [kind]="a.glyph" />
+      </div>
+      <div class="body">
+        <p class="meta mono">
+          <span class="kind" [attr.data-kind]="a.kind">{{ a.kind }}</span>
+          <span>{{ a.period }}</span>
+        </p>
+        <h2 class="display">{{ a.title }}</h2>
+        <p class="tagline">{{ a.tagline }}</p>
+        @if (a.stack.length) {
+          <p class="stack mono">
+            @for (s of a.stack.slice(0, 4); track s) {
+              <span>{{ skillName(s) }}</span>
+            }
+            @if (a.stack.length > 4) {
+              <span class="more">+{{ a.stack.length - 4 }}</span>
+            }
+          </p>
+        }
+        <span class="open mono">open artifact →</span>
+      </div>
+    </a>
+  } @empty {
+    <p class="empty mono">0 rows. Try a different filter.</p>
+  }
+</div>

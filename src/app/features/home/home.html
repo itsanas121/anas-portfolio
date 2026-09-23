@@ -1,0 +1,162 @@
+<section class="hero">
+  <div class="intro">
+    <p class="kicker fade-up">
+      <span class="status-dot status-dot--running"></span>
+      Available for data &amp; backend roles
+    </p>
+
+    <h1 class="name display">
+      <span class="line fade-up" style="animation-delay: 80ms">Anas</span>
+      <span class="line fade-up" style="animation-delay: 160ms"><em>Almehmadi</em></span>
+    </h1>
+
+    <!-- <p class="arabic fade-up" style="animation-delay: 240ms" lang="ar" dir="rtl">{{ profile.arabicName }}</p> -->
+
+    <p class="pitch fade-up" style="animation-delay: 320ms">
+      I build the <strong>pipelines</strong> that move data, the <strong>backends</strong> that serve it, and the
+      <strong>dashboards</strong> that make it make sense. Computer Science at Umm Al-Qura University, CDMP certified.
+    </p>
+
+    @if (currentRole) {
+      <p class="now mono fade-up" style="animation-delay: 400ms">
+        <span class="tag">now</span> {{ currentRole }}
+      </p>
+    }
+
+    <div class="ctas fade-up" style="animation-delay: 480ms">
+      <a routerLink="/runs" class="btn btn--primary">Explore the pipeline →</a>
+      <button type="button" class="btn" (click)="console.toggle()">
+        <span class="kbd">`</span> Query my CV
+      </button>
+    </div>
+  </div>
+
+  <aside class="log panel fade-up" style="animation-delay: 200ms" aria-label="Pipeline run log">
+    <div class="log-head mono">
+      <span>scheduler.log</span>
+      <span class="state" [class.done]="logDone()">
+        <span class="status-dot" [class.status-dot--running]="!logDone()"></span>
+        {{ logDone() ? 'succeeded' : 'running' }}
+      </span>
+    </div>
+    <ol class="log-body mono">
+      @for (line of lines(); track $index) {
+        <li animate.enter="fade-up">
+          <span class="t">{{ line.time }}</span>
+          <span class="lvl" [class]="line.level">{{ line.level }}</span>
+          <span class="msg">{{ line.text }}</span>
+        </li>
+      }
+      @if (!logDone()) {
+        <li class="cursor"><span class="t"></span><span>▍</span></li>
+      }
+    </ol>
+  </aside>
+</section>
+
+<section class="dag-section" aria-labelledby="dag-title">
+  <div class="section-head" appReveal>
+    <p class="kicker">the site is a DAG</p>
+    <h2 id="dag-title" class="display">Six stages. <em>Pick any node.</em></h2>
+  </div>
+
+  <div class="graph" #graph appReveal [revealDelay]="100">
+    <svg class="edges" [attr.viewBox]="viewBox()" preserveAspectRatio="none" aria-hidden="true">
+      @for (edge of edges(); track edge.from + edge.to) {
+        <path class="edge" [class.lit]="isLit(edge)" [attr.d]="edge.d" />
+      }
+    </svg>
+    <svg class="edges packets" [attr.viewBox]="viewBox()" preserveAspectRatio="none" aria-hidden="true">
+      @for (edge of edges(); track edge.from + edge.to; let i = $index) {
+        <circle r="3" class="packet">
+          <animateMotion [attr.dur]="2.4 + (i % 3) * 0.5 + 's'" [attr.begin]="i * 0.4 + 's'" repeatCount="indefinite" [attr.path]="edge.d" />
+        </circle>
+      }
+    </svg>
+
+    @for (stage of stages; track stage.key) {
+      <a
+        #node
+        class="node panel"
+        [attr.data-key]="stage.key"
+        [style.grid-area]="stage.key"
+        [routerLink]="stage.key === 'source' ? [] : stage.route"
+        [fragment]="stage.key === 'source' ? 'source' : undefined"
+        (mouseenter)="hovered.set(stage.key)"
+        (mouseleave)="hovered.set(null)"
+        (focus)="hovered.set(stage.key)"
+        (blur)="hovered.set(null)"
+      >
+        <span class="node-top mono">
+          <span class="idx">{{ stage.index }}</span>
+          <span class="status-dot"></span>
+        </span>
+        <span class="node-label mono">{{ stage.label }}</span>
+        <span class="node-plain">{{ stage.plain }}</span>
+        <span class="node-stat mono">{{ stat(stage) }}</span>
+      </a>
+    }
+  </div>
+</section>
+
+<section id="source" class="source" aria-labelledby="source-title">
+  <div class="section-head" appReveal>
+    <p class="kicker">00 / source</p>
+    <h2 id="source-title" class="display">Where the data <em>comes from.</em></h2>
+  </div>
+
+  <div class="source-grid">
+    <div class="record panel mono" appReveal>
+      <p class="record-head"><span>profile.json</span><span class="dim">1 row</span></p>
+      <dl>
+        <div><dt>name</dt><dd>"{{ profile.fullName }}"</dd></div>
+        <div><dt>based_in</dt><dd>"{{ profile.location }}"</dd></div>
+        <div><dt>degree</dt><dd>"{{ education.degree }}"</dd></div>
+        <div><dt>school</dt><dd>"{{ education.school }}"</dd></div>
+        <div><dt>gpa</dt><dd class="num">{{ education.gpa }} <span class="dim">/ {{ education.gpaScale }}</span></dd></div>
+        <div><dt>graduating</dt><dd class="num">{{ education.expectedEnd }}</dd></div>
+        <div><dt>focus</dt><dd>["data engineering", "analytics", "backend"]</dd></div>
+        <div><dt>languages</dt><dd>["Arabic", "English"]</dd></div>
+        <div><dt>certified</dt><dd>["CDMP", "NVIDIA NCA-GENL", "Google DA"]</dd></div>
+      </dl>
+    </div>
+
+    <div class="about" appReveal [revealDelay]="120">
+      <p class="summary">{{ profile.summary }}</p>
+
+      <div class="stats">
+        <div>
+          <strong class="display"><app-count-up [value]="portfolio.industryMonths()" /></strong>
+          <span class="mono">months in industry</span>
+        </div>
+        <div>
+          <strong class="display"><app-count-up [value]="10000" suffix="+" /></strong>
+          <span class="mono">students reached</span>
+        </div>
+        <div>
+          <strong class="display"><app-count-up [value]="portfolio.certifications.length" /></strong>
+          <span class="mono">certifications</span>
+        </div>
+      </div>
+
+      <p class="kicker sub">coursework</p>
+      <ul class="courses">
+        @for (course of education.coursework; track course) {
+          <li class="mono">{{ course }}</li>
+        }
+      </ul>
+
+      <p class="kicker sub">on campus</p>
+      <ul class="activities">
+        @for (activity of education.activities; track activity) {
+          <li>{{ activity }}</li>
+        }
+      </ul>
+    </div>
+  </div>
+
+  <a routerLink="/runs" class="next" appReveal>
+    <span class="mono">next stage · 01 / runs</span>
+    <span class="display">See the career run →</span>
+  </a>
+</section>
