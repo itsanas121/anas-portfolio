@@ -1,0 +1,101 @@
+@if (artifact(); as a) {
+  <a routerLink="/artifacts" class="back mono">← all artifacts</a>
+
+  <header class="head">
+    <div class="intro fade-up">
+      <p class="meta mono">
+        <span class="kind" [attr.data-kind]="a.kind">{{ a.kind }}</span>
+        <span>{{ a.period }}</span>
+        @if (neighbours(); as n) {
+          <span class="dim">{{ n.position }}</span>
+        }
+      </p>
+      <h1 class="display">{{ a.title }}</h1>
+      <p class="tagline">{{ a.tagline }}</p>
+    </div>
+    <div class="glyph panel fade-up" style="animation-delay: 120ms">
+      <app-artifact-glyph [kind]="a.glyph" />
+    </div>
+  </header>
+
+  @if (a.metrics?.length) {
+    <div class="metrics" appReveal>
+      @for (m of a.metrics; track m.label) {
+        <div>
+          <strong class="display"><app-count-up [value]="m.value" [suffix]="m.suffix ?? ''" /></strong>
+          <span class="mono">{{ m.label }}</span>
+        </div>
+      }
+    </div>
+  }
+
+  <div class="layout">
+    <div class="main-col">
+      <section appReveal>
+        <p class="kicker">why it exists</p>
+        <p class="why">{{ a.why }}</p>
+      </section>
+
+      <section appReveal>
+        <p class="kicker">what it does</p>
+        <ol class="highlights">
+          @for (h of a.highlights; track $index) {
+            <li>
+              <span class="n mono">{{ ($index + 1).toString().padStart(2, '0') }}</span>
+              <span>{{ h }}</span>
+            </li>
+          }
+        </ol>
+      </section>
+    </div>
+
+    <aside class="side panel mono" appReveal [revealDelay]="100">
+      <dl>
+        <div><dt>context</dt><dd>{{ a.context }}</dd></div>
+        <div><dt>role</dt><dd>{{ a.role }}</dd></div>
+        <div><dt>period</dt><dd>{{ a.period }}</dd></div>
+      </dl>
+
+      @if (a.stack.length) {
+        <p class="side-title">stack</p>
+        <div class="chips">
+          @for (id of a.stack; track id) {
+            <app-skill-chip [skillId]="id" />
+          }
+        </div>
+      }
+
+      @if (a.links.length) {
+        <p class="side-title">links</p>
+        <ul class="links">
+          @for (link of a.links; track link.url) {
+            <li>
+              <a [href]="link.url" target="_blank" rel="noopener">{{ link.label }} <span>↗</span></a>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="side-title">links</p>
+        <p class="private">Internal or private work. Happy to walk through it in person.</p>
+      }
+    </aside>
+  </div>
+
+  @if (neighbours(); as n) {
+    <nav class="pager" aria-label="More projects">
+      <a [routerLink]="['/artifacts', n.prev.slug]">
+        <span class="mono">← previous</span>
+        <span class="display">{{ n.prev.title }}</span>
+      </a>
+      <a [routerLink]="['/artifacts', n.next.slug]" class="right">
+        <span class="mono">next →</span>
+        <span class="display">{{ n.next.title }}</span>
+      </a>
+    </nav>
+  }
+} @else {
+  <div class="missing">
+    <p class="mono err">ERROR: artifact "{{ slug() }}" does not exist</p>
+    <a routerLink="/artifacts" class="btn">← back to the catalog</a>
+  </div>
+}

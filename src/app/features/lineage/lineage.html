@@ -1,0 +1,99 @@
+<app-section-header
+  index="03"
+  label="lineage"
+  plain="Skills"
+  lede="Not a list of buzzwords. Each skill is traced to the roles, projects and certifications where it was actually used. Hover to trace, click to pin."
+>
+  Every skill has <em>a source.</em>
+</app-section-header>
+
+<div class="readout panel mono" appReveal aria-live="polite">
+  @if (readout(); as r) {
+    <p class="q"><span class="ps1">anas=#</span> {{ r.query }}</p>
+    @if (r.items.length) {
+      <p class="items">
+        @for (item of r.items; track item) {
+          <span>{{ item }}</span>
+        }
+      </p>
+    } @else {
+      <p class="items none">{{ r.empty }}</p>
+    }
+  } @else {
+    <p class="q idle"><span class="ps1">anas=#</span> hover a skill or a consumer to trace its lineage<span class="blink">▍</span></p>
+  }
+</div>
+
+<div class="canvas" #canvas appReveal [revealDelay]="80">
+  <svg class="links" [attr.viewBox]="viewBox()" preserveAspectRatio="none" aria-hidden="true">
+    @for (link of links(); track link.skill + link.node) {
+      <path
+        [attr.d]="link.d"
+        [class.on]="isLinkActive(link)"
+        [class.dim]="!!focus() && !isLinkActive(link)"
+        [style.--c]="'var(--cat-' + link.category + ')'"
+      />
+    }
+  </svg>
+
+  <div class="col skills">
+    <p class="col-title kicker">skills <span>{{ portfolio.skills.length }}</span></p>
+    @for (cat of categories; track cat.key) {
+      <div class="cat" [style.--c]="'var(--cat-' + cat.key + ')'">
+        <p class="cat-label mono">{{ cat.label }}</p>
+        <ul>
+          @for (s of cat.skills; track s.id) {
+            <li>
+              <button
+                #skillEl
+                type="button"
+                class="skill mono"
+                [attr.data-id]="s.id"
+                [class]="skillState(s)"
+                [class.pinned]="selected()?.id === s.id"
+                [attr.aria-pressed]="selected()?.id === s.id"
+                (mouseenter)="hovered.set({ type: 'skill', id: s.id })"
+                (mouseleave)="hovered.set(null)"
+                (focus)="hovered.set({ type: 'skill', id: s.id })"
+                (blur)="hovered.set(null)"
+                (click)="toggle({ type: 'skill', id: s.id })"
+              >
+                <i></i>
+                <span class="name">{{ s.name }}</span>
+                <span class="uses">{{ usage.get(s.id) ?? 0 }}</span>
+              </button>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+
+  <div class="col consumers">
+    <p class="col-title kicker">consumers <span>{{ nodes.length }}</span></p>
+    @for (group of groups; track group.kind) {
+      <p class="cat-label mono">{{ group.label }}</p>
+      <ul>
+        @for (n of group.nodes; track n.id) {
+          <li>
+            <div
+              #nodeEl
+              class="consumer"
+              [attr.data-id]="n.id"
+              [class]="nodeState(n)"
+              [class.pinned]="selected()?.id === n.id"
+              (mouseenter)="hovered.set({ type: 'node', id: n.id })"
+              (mouseleave)="hovered.set(null)"
+            >
+              <button type="button" class="pick" (click)="toggle({ type: 'node', id: n.id })" [attr.aria-pressed]="selected()?.id === n.id">
+                <span class="label">{{ n.label }}</span>
+                <span class="sub mono">{{ n.sub }}</span>
+              </button>
+              <a class="go mono" [routerLink]="n.route" [attr.aria-label]="'Open ' + n.label">↗</a>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</div>

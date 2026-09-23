@@ -1,26 +1,85 @@
-<div class="page">
-  <div class="card">
-    <div class="icon">🐳</div>
+<a class="skip mono" href="#main">Skip to content</a>
 
-    <h1>Dockerized Angular App</h1>
+<header class="topbar mono">
+  <a routerLink="/" class="brand" aria-label="Home">
+    <svg viewBox="0 0 64 64" aria-hidden="true">
+      <path d="M14 44 L26 20 L38 44" />
+      <path class="accent" d="M38 44 C 44 44, 44 30, 50 30" />
+      <circle cx="50" cy="30" r="4" />
+    </svg>
+    <span>anas<span class="dim">.pipeline</span></span>
+  </a>
 
-    <p>
-      A simple Angular application running inside a Docker container.
-    </p>
+  <span class="crumb">
+    <span class="dim">~</span>{{ path() === '/' ? '/source' : path() }}
+  </span>
 
-    <div class="status">
-      <span class="dot"></span>
-      Running in Docker
-    </div>
+  <span class="health" title="Served by Nginx from a Docker container">
+    <span class="status-dot"></span>
+    nginx · container healthy
+  </span>
 
-    <div class="tech-stack">
-      <span>Angular</span>
-      <span>Docker</span>
-      <span>Nginx</span>
-    </div>
+  <span class="clock" title="Local time in Saudi Arabia">{{ clock() }} AST</span>
 
-    <p class="footer">
-      Built for AZEM Technical Program 2.0
-    </p>
+  <button type="button" class="console-btn" (click)="console.toggle()" [attr.aria-expanded]="console.open()">
+    <span class="kbd">`</span> console
+  </button>
+
+  <button
+    type="button"
+    class="menu-btn"
+    (click)="menuOpen.set(!menuOpen())"
+    [attr.aria-expanded]="menuOpen()"
+    aria-controls="stage-nav"
+  >
+    {{ menuOpen() ? 'close' : 'stages' }}
+  </button>
+</header>
+
+<nav id="stage-nav" class="rail" [class.open]="menuOpen()" aria-label="Sections">
+  <p class="rail-title kicker">pipeline stages</p>
+  <ol>
+    @for (stage of stages; track stage.key) {
+      <li>
+        <a
+          [routerLink]="stage.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: stage.route === '/' }"
+          #rla="routerLinkActive"
+          [attr.aria-current]="rla.isActive ? 'page' : null"
+        >
+          <span class="node" aria-hidden="true"></span>
+          <span class="idx mono">{{ stage.index }}</span>
+          <span class="names">
+            <span class="label mono">{{ stage.label }}</span>
+            <span class="plain">{{ stage.plain }}</span>
+          </span>
+        </a>
+      </li>
+    }
+  </ol>
+
+  <div class="rail-foot mono">
+    <a [href]="'mailto:' + profile.email">{{ profile.email }}</a>
+    <a [href]="profile.links.github" target="_blank" rel="noopener">github/itsanas121 ↗</a>
+    @if (profile.links.linkedin) {
+      <a [href]="profile.links.linkedin" target="_blank" rel="noopener">linkedin ↗</a>
+    }
   </div>
-</div>
+</nav>
+
+<main id="main" class="main">
+  <router-outlet />
+  <footer class="footer mono">
+    <span>Built with Angular · shipped in Docker · served by Nginx</span>
+    <span class="dim">© {{ year }} {{ profile.name }}</span>
+  </footer>
+</main>
+
+@if (console.open()) {
+  <div class="drawer-backdrop" (click)="console.close()" animate.enter="backdrop-in" animate.leave="backdrop-out"></div>
+  <section class="drawer" role="dialog" aria-label="Query console" animate.enter="drawer-in" animate.leave="drawer-out">
+    <app-query-console [compact]="true" (navigated)="console.close()" />
+    <button type="button" class="drawer-close mono" (click)="console.close()">esc · close</button>
+  </section>
+}

@@ -1,0 +1,398 @@
+:host {
+  display: block;
+  --label-w: 210px;
+}
+
+em {
+  color: var(--amber);
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 36px;
+  margin-bottom: 22px;
+  font-size: 0.8125rem;
+}
+
+.summary div {
+  display: flex;
+  flex-direction: column;
+}
+
+.k {
+  color: var(--dim);
+  font-size: 0.6875rem;
+}
+
+.v {
+  color: var(--text);
+}
+
+.v.running {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--amber);
+}
+
+/* ---------- Gantt ---------- */
+
+.gantt-scroll {
+  overflow-x: auto;
+  padding: 18px 20px 22px;
+}
+
+.gantt {
+  position: relative;
+  min-width: 820px;
+}
+
+.axis,
+.row {
+  display: grid;
+  grid-template-columns: var(--label-w) 1fr;
+  align-items: center;
+}
+
+.axis {
+  height: 26px;
+  border-bottom: 1px solid var(--line);
+}
+
+.track {
+  position: relative;
+  height: 100%;
+}
+
+.year {
+  position: absolute;
+  top: 2px;
+  transform: translateX(-50%);
+  font-size: 0.6875rem;
+  color: var(--muted);
+}
+
+.lane-title {
+  margin: 18px 0 4px;
+  font-size: 0.625rem;
+  color: var(--dim);
+}
+
+.row {
+  height: 38px;
+}
+
+.lane-label {
+  padding-right: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  color: var(--muted);
+  transition: color 0.2s;
+}
+
+.lane-label.is-selected {
+  color: var(--text);
+}
+
+.grid-line {
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  width: 1px;
+  background: var(--line);
+}
+
+.bar {
+  position: absolute;
+  top: 7px;
+  height: 24px;
+  min-width: 10px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: var(--c);
+  color: #0c0e12;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s, filter 0.2s;
+}
+
+.bar.lane-industry {
+  --c: var(--teal);
+}
+
+.bar.lane-leadership {
+  --c: var(--violet);
+}
+
+.bar.lane-education {
+  --c: var(--sky);
+}
+
+.bar.running {
+  background: repeating-linear-gradient(-45deg, var(--c) 0 8px, color-mix(in srgb, var(--c) 78%, #000) 8px 16px);
+  background-size: 200% 100%;
+  animation: stripe 3s linear infinite;
+}
+
+.bar:hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
+.bar.is-selected {
+  border-color: var(--text);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 30%, transparent), 0 8px 22px -8px var(--c);
+}
+
+.bar-text {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.queued {
+  position: absolute;
+  top: 7px;
+  height: 24px;
+  border: 1px dashed var(--line-strong);
+  border-left: 0;
+  border-radius: 0 6px 6px 0;
+  background: repeating-linear-gradient(-45deg, transparent 0 6px, rgba(255, 255, 255, 0.03) 6px 12px);
+}
+
+/* Spans the track area only; the marker sits at --now within it. */
+.now {
+  position: absolute;
+  top: 0;
+  bottom: -8px;
+  left: var(--label-w);
+  right: 0;
+  pointer-events: none;
+}
+
+.now::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--now);
+  width: 1px;
+  background: var(--amber);
+  box-shadow: 0 0 12px var(--amber);
+}
+
+.now span {
+  position: absolute;
+  top: -2px;
+  left: var(--now);
+  transform: translateX(6px);
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--amber);
+  color: #17120a;
+  font-size: 0.625rem;
+  white-space: nowrap;
+}
+
+@keyframes stripe {
+  to {
+    background-position: -45px 0;
+  }
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 14px 0 48px;
+  font-size: 0.6875rem;
+  color: var(--muted);
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.sw {
+  width: 14px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--teal);
+}
+
+.sw.running {
+  background: repeating-linear-gradient(-45deg, var(--amber) 0 3px, #8a6425 3px 6px);
+}
+
+.sw.queued {
+  border: 1px dashed var(--line-strong);
+  background: none;
+}
+
+.dim {
+  color: var(--dim);
+}
+
+/* ---------- Task detail ---------- */
+
+.task {
+  padding: clamp(22px, 4vw, 40px);
+}
+
+.task-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--dim);
+  font-size: 0.75rem;
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.625rem;
+  background: var(--teal-soft);
+  color: var(--teal);
+}
+
+.badge.running {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.task h2 {
+  margin-top: 14px;
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.org {
+  margin-top: 6px;
+  color: var(--text-soft);
+}
+
+.note {
+  color: var(--muted);
+}
+
+.facts {
+  margin: 0;
+  font-size: 0.75rem;
+}
+
+.facts div {
+  display: grid;
+  grid-template-columns: 70px auto;
+  gap: 10px;
+  padding: 3px 0;
+}
+
+.facts dt {
+  color: var(--dim);
+}
+
+.facts dd {
+  margin: 0;
+  color: var(--text-soft);
+}
+
+.task-summary {
+  margin: 24px 0;
+  max-width: 70ch;
+  font-size: 1.0625rem;
+  color: var(--text-soft);
+}
+
+.metrics {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 28px;
+}
+
+.metrics strong {
+  display: block;
+  font-size: 2.6rem;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--amber);
+}
+
+.metrics span {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.kicker {
+  margin-bottom: 10px;
+}
+
+.logs {
+  margin: 0 0 30px;
+  padding: 14px 16px;
+  list-style: none;
+  border-radius: var(--radius-sm);
+  background: #07090c;
+  border: 1px solid var(--line);
+  font-size: 0.8125rem;
+}
+
+.logs li {
+  display: grid;
+  grid-template-columns: 26px 40px 1fr;
+  gap: 8px;
+  padding: 4px 0;
+  color: var(--text-soft);
+  animation: fade-up 0.45s var(--ease) both;
+}
+
+.ln {
+  color: var(--dim);
+}
+
+.lv {
+  color: var(--sky);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+@media (max-width: 640px) {
+  :host {
+    --label-w: 130px;
+  }
+
+  .logs li {
+    grid-template-columns: 22px 1fr;
+  }
+
+  .lv {
+    display: none;
+  }
+}

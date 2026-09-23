@@ -1,0 +1,138 @@
+<app-section-header
+  index="01"
+  label="runs"
+  plain="Experience"
+  lede="Every role is a task in one long-running DAG. Four internships back to back since September 2025, alongside leadership roles and a degree. Select any task to read its logs."
+>
+  One run, <em>zero idle time.</em>
+</app-section-header>
+
+<div class="summary mono" appReveal>
+  <div><span class="k">dag_id</span><span class="v">anas_almehmadi</span></div>
+  <div><span class="k">state</span><span class="v running"><span class="status-dot status-dot--running"></span> running</span></div>
+  <div><span class="k">industry tasks</span><span class="v">{{ industryCount }}</span></div>
+  <div><span class="k">industry time</span><span class="v">{{ portfolio.industryMonths() }} months</span></div>
+</div>
+
+<div class="gantt-scroll panel" appReveal [revealDelay]="80">
+  <div class="gantt" role="group" aria-label="Career timeline">
+    <div class="axis">
+      <span class="lane-label"></span>
+      <div class="track">
+        @for (tick of years(); track tick.label) {
+          <span class="year mono" [style.left.%]="tick.left">{{ tick.label }}</span>
+        }
+      </div>
+    </div>
+
+    @for (lane of lanes; track lane.key) {
+      <p class="lane-title kicker">{{ lane.label }}</p>
+      @for (bar of barsByLane().get(lane.key); track bar.run.id) {
+        <div class="row">
+          <span class="lane-label mono" [class.is-selected]="bar.run.id === selectedId()">{{ bar.run.org }}</span>
+          <div class="track">
+            @for (tick of years(); track tick.label) {
+              <span class="grid-line" [style.left.%]="tick.left"></span>
+            }
+            @if (bar.queuedWidth) {
+              <span class="queued" [style.left.%]="bar.left + bar.width" [style.width.%]="bar.queuedWidth"></span>
+            }
+            <button
+              type="button"
+              class="bar"
+              [id]="'bar-' + bar.run.id"
+              [class]="'lane-' + lane.key + ' ' + portfolio.runStatus(bar.run)"
+              [class.is-selected]="bar.run.id === selectedId()"
+              [style.left.%]="bar.left"
+              [style.width.%]="bar.width"
+              [attr.aria-pressed]="bar.run.id === selectedId()"
+              [attr.aria-label]="bar.run.role + ', ' + bar.run.org + ', ' + portfolio.runPeriod(bar.run)"
+              (click)="select(bar.run.id)"
+              (keydown)="onBarKey($event, bar.run.id)"
+            >
+              <span class="bar-text mono">{{ bar.run.id }}</span>
+            </button>
+          </div>
+        </div>
+      }
+    }
+
+    <div class="now" [style.--now]="nowLeft + '%'" aria-hidden="true">
+      <span class="mono">now · {{ nowLabel }}</span>
+    </div>
+  </div>
+</div>
+
+<p class="legend mono" appReveal>
+  <span><i class="sw success"></i>success</span>
+  <span><i class="sw running"></i>running</span>
+  <span><i class="sw queued"></i>scheduled</span>
+  <span class="dim">← → to move between tasks</span>
+</p>
+
+@let run = selected();
+@for (r of [run]; track r.id) {
+  <article class="task panel" animate.enter="fade-up" aria-live="polite">
+    <header class="task-head">
+      <div>
+        <p class="mono meta">
+          <span class="badge" [class]="portfolio.runStatus(r)">{{ portfolio.runStatus(r) }}</span>
+          <span>task_id = {{ r.id }}</span>
+        </p>
+        <h2 class="display">{{ r.role }}</h2>
+        <p class="org">
+          {{ r.org }}
+          @if (r.orgNote) {
+            <span class="note">· {{ r.orgNote }}</span>
+          }
+        </p>
+      </div>
+      <dl class="facts mono">
+        <div><dt>period</dt><dd>{{ portfolio.runPeriod(r) }}</dd></div>
+        <div><dt>duration</dt><dd>{{ portfolio.runDuration(r) }}</dd></div>
+        <div><dt>where</dt><dd>{{ r.location }}</dd></div>
+      </dl>
+    </header>
+
+    <p class="task-summary">{{ r.summary }}</p>
+
+    @if (r.metrics?.length) {
+      <div class="metrics">
+        @for (m of r.metrics; track m.label) {
+          <div>
+            <strong class="display">{{ m.value.toLocaleString('en') }}{{ m.suffix }}</strong>
+            <span class="mono">{{ m.label }}</span>
+          </div>
+        }
+      </div>
+    }
+
+    <p class="kicker">task log</p>
+    <ol class="logs mono">
+      @for (line of r.logs; track $index) {
+        <li [style.animation-delay]="$index * 60 + 'ms'">
+          <span class="ln">{{ ($index + 1).toString().padStart(2, '0') }}</span>
+          <span class="lv">INFO</span>
+          <span>{{ line }}</span>
+        </li>
+      }
+    </ol>
+
+    @if (r.stack.length) {
+      <p class="kicker">operators used</p>
+      <div class="chips">
+        @for (id of r.stack; track id) {
+          <app-skill-chip [skillId]="id" />
+        }
+      </div>
+    }
+
+    @if (r.links?.length) {
+      <div class="links">
+        @for (link of r.links; track link.url) {
+          <a class="btn" [href]="link.url" target="_blank" rel="noopener">{{ link.label }} ↗</a>
+        }
+      </div>
+    }
+  </article>
+}

@@ -1,0 +1,89 @@
+<app-section-header
+  index="04"
+  label="monitor"
+  plain="Impact"
+  lede="The numbers behind the work outside the job title: student initiatives, teams led, recognition and certifications."
+>
+  All systems <em>green.</em>
+</app-section-header>
+
+<div class="toolbar mono" appReveal>
+  <span><span class="status-dot"></span> all checks passing</span>
+  <span class="dim">range: {{ portfolio.education.start }} → now</span>
+  <span class="dim">refresh: live</span>
+</div>
+
+<div class="board">
+  @for (m of portfolio.impact; track m.label; let i = $index) {
+    <section class="panel stat" appReveal [revealDelay]="i * 60">
+      <p class="p-title mono">{{ m.label }}</p>
+      <p class="value display">
+        <app-count-up [value]="m.value" [decimals]="m.decimals ?? 0" [suffix]="m.suffix ?? ''" />
+      </p>
+      <span class="spark" aria-hidden="true"></span>
+    </section>
+  }
+
+  <section class="panel reach" appReveal>
+    <header class="p-head mono"><span>Leadership reach</span><span class="dim">√ scale</span></header>
+    <ul>
+      @for (r of reach; track $index) {
+        <li>
+          <span class="r-label">{{ r.label }} <span class="mono dim">· {{ r.sub }}</span></span>
+          <span class="track"><span class="fill" [style.width.%]="barWidth(r.value)"></span></span>
+          <span class="r-value mono">{{ r.value.toLocaleString('en') }}+</span>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <section class="panel honor" appReveal [revealDelay]="80">
+    <header class="p-head mono"><span>{{ honor.title }}</span><span class="dim">{{ honor.year }}</span></header>
+    <div class="seats" role="img" [attr.aria-label]="honor.selected + ' selected from ' + honor.nominees + ' nominees'">
+      @for (seat of seats; track $index) {
+        <span class="seat" [class.selected]="seat.selected" [class.me]="seat.me" [style.animation-delay]="$index * 25 + 'ms'"></span>
+      }
+    </div>
+    <p class="honor-copy">
+      <strong class="display">{{ honor.selected }} of {{ honor.nominees }}</strong>
+      nominees selected, top {{ selectionRate }}%. {{ honor.detail }}
+    </p>
+    <p class="legend mono"><span class="seat me"></span> Anas <span class="seat selected"></span> recipients <span class="seat"></span> nominees</p>
+  </section>
+
+  <section class="panel resources" appReveal>
+    <header class="p-head mono"><span>Manar · learning resources</span><span class="dim">total {{ resourceTotal }}</span></header>
+    <div class="columns">
+      @for (r of resources; track r.label) {
+        <div class="column">
+          <span class="c-value mono">{{ r.value }}</span>
+          <span class="bar-v" [style.height.%]="(r.value / resourceMax) * 100"></span>
+          <span class="c-label mono">{{ r.label }}</span>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="panel certs" appReveal [revealDelay]="80">
+    <header class="p-head mono"><span>Certification checks</span><span class="dim">{{ portfolio.certifications.length }} / {{ portfolio.certifications.length }} passing</span></header>
+    <table>
+      <tbody>
+        @for (c of portfolio.certifications; track c.id) {
+          <tr>
+            <td class="ok mono">✓ PASS</td>
+            <td>
+              <span class="c-name">{{ c.name }}</span>
+              <span class="c-issuer mono">{{ c.issuer }}</span>
+            </td>
+            <td class="year mono">{{ c.year }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <div class="cert-skills">
+      @for (id of ['genai', 'llm', 'modeling', 'data-quality', 'r']; track id) {
+        <app-skill-chip [skillId]="id" />
+      }
+    </div>
+  </section>
+</div>
