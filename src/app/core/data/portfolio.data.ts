@@ -26,7 +26,7 @@ export const PROFILE: Profile = {
   links: {
     github: 'https://github.com/itsanas121',
     linkedin: 'https://www.linkedin.com/in/anas-almehmadi/',
-    dockerHub: 'https://hub.docker.com/r/itsanas121/docker-angular-app',
+    dockerHub: 'https://hub.docker.com/r/itsanas121/anas-portfolio',
   },
   languages: ['Arabic', 'English'],
 };
@@ -283,7 +283,7 @@ export const ARTIFACTS: Artifact[] = [
       'Image published to Docker Hub and run as a container on a remote server.',
     ],
     stack: ['angular', 'typescript', 'docker', 'nginx', 'git'],
-    links: [{ label: 'Docker Hub image', url: 'https://hub.docker.com/r/itsanas121/docker-angular-app' }],
+    links: [{ label: 'Docker Hub image', url: 'https://hub.docker.com/r/itsanas121/anas-portfolio' }],
   },
   {
     slug: 'saudi-tourism-hub',

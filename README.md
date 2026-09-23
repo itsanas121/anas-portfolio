@@ -1,6 +1,7 @@
-# anas.pipeline: Dockerized Angular Portfolio
+# Anas Portfolio
 
-Personal portfolio of **Anas Almehmadi**, built for the AZEM Technical Internship Program (2.0) Docker task.
+Personal developer portfolio of **Anas Almehmadi**, served as a Docker container behind Nginx.
+It started as a containerization task in the AZEM Technical Internship Program (2.0).
 The site is designed as a data platform: each section is a stage of a pipeline.
 
 | Stage | Route | What it shows |
@@ -56,13 +57,13 @@ npm test
 Build the Docker image:
 
 ```bash
-docker build -t docker-angular-app .
+docker build -t anas-portfolio .
 ```
 
 Run the container:
 
 ```bash
-docker run -d -p 8080:80 --name docker-angular-container docker-angular-app
+docker run -d -p 8080:80 --name anas-portfolio anas-portfolio
 ```
 
 Then open [http://localhost:8080/](http://localhost:8080/).
@@ -82,4 +83,4 @@ The application uses a multi-stage Docker build:
 
 Docker image:
 
-`itsanas121/docker-angular-app:latest`
+`itsanas121/anas-portfolio:latest`
